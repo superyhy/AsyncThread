@@ -1,0 +1,10 @@
+server:
+  port: 8080
+#elasticsearch配置
+spring:
+  data:
+    elasticsearch:
+      cluster-name: my-application
+      cluster-nodes: 127.0.0.1:9200
+      repositories:
+        enabled: true
