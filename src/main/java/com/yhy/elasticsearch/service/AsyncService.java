@@ -123,5 +123,18 @@ public class AsyncService {
         });
     }
 
+    public void myThread4(){
+        asyncService.execute(()->{
+            for(int i=0;i<1000000;i++){
+                System.out.println(Thread.currentThread().getName()+"任务："+i);
+            }
+        });
+    }
 
+    public void myThread5(){
+
+            for(int i=0;i<1000000;i++){
+                System.out.println(Thread.currentThread().getName()+"任务："+i);
+            }
+    }
 }

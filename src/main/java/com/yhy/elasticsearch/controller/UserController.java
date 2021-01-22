@@ -17,6 +17,12 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 @RestController
@@ -79,8 +85,28 @@ public class UserController {
     @ResponseBody
     @GetMapping("/test2")
     public void thread2(){
-        asyncService.myThread3();
+        asyncService.myThread4();
     }
+
+    @ResponseBody
+    @GetMapping("/test3")
+    public void thread3(){
+        asyncService.myThread5();
+    }
+
+    public static void main(String[] args) throws IOException {
+        URL url= new URL("http://localhost:9200/books/_search?pretty=true");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        if(con.getResponseCode() == 200) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String str = null;
+            while ((str = br.readLine()) != null) {
+                System.out.println(str);
+            }
+        }
+
+    }
+
 
 
 }

@@ -20,9 +20,9 @@ public class ThreadExecutorConfig {
     //核心线程数
     private int corePoolSize = 10;
     //最大线程数
-    private int maxNumPoolSize = 100;
-    //队列数
-    private int workQueue = 10;
+    private int maxNumPoolSize = 15;
+    //队列容量
+    private int workQueue = 20;
 
 
     @Bean
@@ -34,7 +34,7 @@ public class ThreadExecutorConfig {
         executor.setQueueCapacity(workQueue);
         executor.setThreadNamePrefix("test-thread-server-");
         //当pool达到max size时，如何处理新任务
-        //该处理程序在execute方法的调用线程中直接运行被拒绝的任务
+        //该处理程序在execute方法的调用线程中直接运行被拒绝的任务，不在新的线程中执行
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         //执行初始化操作
         executor.initialize();
