@@ -128,11 +128,16 @@ public class EsCrudService {
     }
 
 
+    /**
+     * 指标聚合
+     */
+    public void  queryTarget(){
 
-    public void  query
+    }
+
     /**
      * 聚合查询：指标、分桶、管道
-     * 统计每个作者的图书数量(桶聚合)，分桶的字段一定要是keyWord类型
+     * 统计每个作者的图书数量和书价平均值(桶聚合)，分桶的字段一定要是keyWord类型
      */
     public void queryTest() {
         Map<String, Long> groupMap = new HashMap<>();
@@ -140,6 +145,8 @@ public class EsCrudService {
 
 
         AggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg").field("author");
+        AggregationBuilder avgAggBuilder = AggregationBuilders.avg("avg").field("price");
+        aggregationBuilder.subAggregation(avgAggBuilder);
         searchBuilder.aggregation(aggregationBuilder);
 
         SearchRequest searchRequest = new SearchRequest(ESIndexConfig.BOOKS_TABLE_INDEX);
