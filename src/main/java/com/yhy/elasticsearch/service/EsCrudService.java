@@ -18,13 +18,16 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EsCrudService {
@@ -111,35 +114,55 @@ public class EsCrudService {
         SearchRequest searchRequest = new SearchRequest(ESIndexConfig.BOOKS_TABLE_INDEX);
         searchRequest.source(searchBuilder);
         SearchResponse searchResponse = null;
-        try{
-            searchResponse = highLevelClient.search(searchRequest,RequestOptions.DEFAULT);
+        try {
+            searchResponse = highLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        SearchHit[] searchHits =searchResponse.getHits().getHits();
+        SearchHit[] searchHits = searchResponse.getHits().getHits();
 
-        for(SearchHit hit:searchHits){
-             System.out.println(hit.getSourceAsString());
+        for (SearchHit hit : searchHits) {
+            System.out.println(hit.getSourceAsString());
         }
     }
 
 
+
+    public void  query
     /**
      * 聚合查询：指标、分桶、管道
-     * 统计每个出版社的图书
+     * 统计每个作者的图书数量(桶聚合)，分桶的字段一定要是keyWord类型
      */
-    public void queryTest(){
+    public void queryTest() {
+        Map<String, Long> groupMap = new HashMap<>();
         SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
 
-        AggregationBuilder aggregationBuilder= AggregationBuilders.terms("agg").field("publish");
 
+        AggregationBuilder aggregationBuilder = AggregationBuilders.terms("agg").field("author");
+        searchBuilder.aggregation(aggregationBuilder);
+
+        SearchRequest searchRequest = new SearchRequest(ESIndexConfig.BOOKS_TABLE_INDEX);
+
+        searchRequest.source(searchBuilder);
+        SearchResponse searchResponse = null;
+        try {
+            searchResponse = highLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Terms terms = searchResponse.getAggregations().get("agg");
+        for (Terms.Bucket entry : terms.getBuckets()) {
+            groupMap.put(entry.getKeyAsString(), entry.getDocCount());
+        }
+
+        System.out.println(searchResponse);
+
+        System.out.println(groupMap);
 
 
     }
-
-
-
 
 
 }
