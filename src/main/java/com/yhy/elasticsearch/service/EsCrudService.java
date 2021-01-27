@@ -19,6 +19,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.metrics.Avg;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -129,9 +130,30 @@ public class EsCrudService {
 
 
     /**
-     * 指标聚合
+     * 指标聚合，计算书价的平均值
      */
-    public void  queryTarget(){
+    public void queryTarget() {
+        SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
+        AggregationBuilder avgAggBuilder = AggregationBuilders.avg("avg").field("price");
+
+        searchBuilder.aggregation(avgAggBuilder);
+
+        SearchRequest searchRequest = new SearchRequest(ESIndexConfig.BOOKS_TABLE_INDEX);
+
+        searchRequest.source(searchBuilder);
+        SearchResponse searchResponse = null;
+        try {
+            searchResponse = highLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(searchResponse);
+
+
+        //取到平均值的value
+        Avg avg = searchResponse.getAggregations().get("avg");
+        System.out.println(avg.getValue());
 
     }
 
